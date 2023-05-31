@@ -13,22 +13,20 @@ def binary_accuracy_logits(preds, label):
 
 
 class LitModelWrapper(pl.LightningModule): 
-    def __init__(self, model, loss_config, optim_config, model_type):
+    def __init__(self, model, loss_config, optim_config):
         super().__init__()
         self.model = model
-        self.xtype = 'kmer count' if model_type=='NeuralNet' else 'seq' if model_type=='Transformer' else print('Specify in lighning_modules whether to use seq or kmer count for this model type')
         self.loss_fn = eval(loss_config['loss_fn'])()
         self.optim_config = optim_config
         self.bin_acc = binary_accuracy_logits
 
     def forward(self, batch):
-        x = batch[self.xtype]
+        x, label = batch
         logit = self.model(x)
         return logit
 
     def training_step(self, batch, batch_idx):
-        x = batch[self.xtype]
-        label = batch['label']
+        x, label = batch
         batch_size = label.shape[0]
         logit = self.model(x).squeeze()
         loss = self.loss_fn(logit, label)
@@ -38,8 +36,7 @@ class LitModelWrapper(pl.LightningModule):
         return loss
     
     def validation_step(self, batch, batch_idx):
-        x = batch[self.xtype]
-        label = batch['label']
+        x, label = batch
         batch_size = label.shape[0]
         logit = self.model(x).squeeze()
         loss = self.loss_fn(logit, label)
@@ -48,8 +45,7 @@ class LitModelWrapper(pl.LightningModule):
         self.log ('validation_accuracy', accuracy, batch_size=batch_size)
 
     def test_step(self, batch, batch_idx):
-        x = batch[self.xtype]
-        label = batch['label']
+        x, label = batch
         batch_size = label.shape[0]
         logit = self.model(x).squeeze()
         loss = self.loss_fn(logit, label)

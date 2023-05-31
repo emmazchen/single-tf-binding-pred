@@ -4,7 +4,7 @@ import json
 # for linking .py files
 from models.neural_net import *
 from lightning_modules import *
-from preprocessing import train_set, val_set, test_set
+from preprocessing import kmer_train_set, kmer_val_set, kmer_test_set
 # for logging results
 import wandb
 from lightning.pytorch.loggers import WandbLogger
@@ -21,15 +21,15 @@ optim_config = config['optim_config']
 trainer_config = config['trainer_config']
 
 # load data 
-train_dl = torch.utils.data.DataLoader(train_set, batch_size=config['batch_size'], shuffle=True)
-val_dl = torch.utils.data.DataLoader(val_set, batch_size=config['batch_size'], shuffle=True) 
-test_dl = torch.utils.data.DataLoader(test_set, batch_size=config['batch_size'], shuffle=True) 
+train_dl = torch.utils.data.DataLoader(kmer_train_set, batch_size=config['batch_size'], shuffle=True)
+val_dl = torch.utils.data.DataLoader(kmer_val_set, batch_size=config['batch_size'], shuffle=True) 
+test_dl = torch.utils.data.DataLoader(kmer_test_set, batch_size=config['batch_size'], shuffle=True) 
 
 # instance model
 model = eval(model_config['model_name'])(model_config['model_kwargs'])
 
 # instance litmodelwrapper
-litmodel = LitModelWrapper(model=model, loss_config=loss_config, optim_config=optim_config, model_type=model_config['model_name'])
+litmodel = LitModelWrapper(model=model, loss_config=loss_config, optim_config=optim_config)
 
 # instance wandb logger
 plg= WandbLogger(project = config['wandb_project'],

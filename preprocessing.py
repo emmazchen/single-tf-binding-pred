@@ -35,34 +35,10 @@ balanced_set['dna seq']=balanced_set['dna seq'].apply(encode_nucleotides)
 
 
 """ train test split """
-torch_dataset = DNADataset(balanced_set['dna seq'].values.tolist(), balanced_set['kmer count'].values.tolist(), balanced_set['label'].values.tolist())
-train_set, val_set, test_set = random_split(torch_dataset, [.8, .1, .1])
+kmer_dataset = KmerDataset(balanced_set['kmer count'].values.tolist(), balanced_set['label'].values.tolist())
+seq_dataset = SeqDataset(balanced_set['dna seq'].values.tolist(), balanced_set['label'].values.tolist())
 
-
-
-
-# # drop irrelevant for models
-# dnaseq_train, kmercounts_train, label_train = train_set
-# dnaseq_val, kmercounts_val, label_val = val_set
-# dnaseq_test, kmercounts_test, label_test = test_set
-
-
-# # expand columns for kmer count
-# kmercounts_train = [torch.tensor(x) for x in kmercounts_train]
-# kmercounts_val = [torch.tensor(x) for x in kmercounts_val]
-# kmercounts_test = [torch.tensor(x) for x in kmercounts_test]
-
-# """
-# transformer x:
-# - seq data with padding and all
-
-# nn x:
-# tensor (64) -> expand col
-
-# """
-
-
-
-# trainset_transformer, valset_transformer, testset_transformer = list(zip(dnaseq_train, label_train)), list(zip(dnaseq_val, label_val)), list(zip(dnaseq_test, label_test))
-# trainset_nn, valset_nn, testset_nn = list(zip(kmercounts_train, label_train)), list(zip(kmercounts_val, label_val)), list(zip(kmercounts_test, label_test))
+#split the same way using manual seed gerator
+kmer_train_set, kmer_val_set, kmer_test_set = random_split(kmer_dataset, [.8, .1, .1], generator=torch.Generator().manual_seed(42))
+seq_train_set, seq_val_set, seq_test_set = random_split(seq_dataset, [.8, .1, .1], generator=torch.Generator().manual_seed(42))
 

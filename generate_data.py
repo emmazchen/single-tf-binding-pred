@@ -1,9 +1,11 @@
 # %%
 import numpy as np
+import torch
 from Bio.motifs.jaspar import *
 from random import sample
+import csv
 
-from utils import *
+from utils.utils_generate_data import *
 
 
 """ 
@@ -11,7 +13,9 @@ Datasets generated:
 - dataset with .01 (1%) threshold: balanced_set         length: 4608
 - dataset with 0 threshold: balanced_set_no_round       length: 331776
 
-The datasets are lists of samples, where each sample is a list of format [dna seq, dna one hot matrix, label]
+    1% threshold means that if frequency of particular nucleotide at particular position is less than 1%, we disregard it and consider freq of that nucleotide to be 0 at that psoition
+
+The datasets are lists of dna seq entries, where each dna seq entry has format [dna seq, dna one hot matrix, label]
 I'm keeping both representations of dna sequence data for easier ways to get kmer count and token encoding down the pipeline
 """
 
@@ -28,7 +32,7 @@ dna_matrices = len_n_dna_matrices(10)
 
 """ Get PFM as array """
 
-with open("/data/ezc2105/TF-binding-pred-pfm/MA0048.2.jaspar") as handle:
+with open(f'/data/ezc2105/tf-binding-pred-pfm/MA0048.2.jaspar') as handle:
     pfm_record = read(handle, 'jaspar')
 
 pfm = jaspar_record_to_array(pfm_record)
@@ -92,3 +96,17 @@ balanced_set_noround = positive_set_noround + negative_subset_noround
 
 
 
+""" Save as pt """
+torch.save(balanced_set, 'balanced_set.pt')
+torch.save(balanced_set_noround, 'balanced_set_noround.pt')
+
+
+""" Save as csv """
+with open('balanced_set.csv', 'w') as f:
+    write = csv.writer(f)
+    write.writerows(balanced_set)
+
+with open('balanced_set_noround.csv', 'w') as f:
+    write = csv.writer(f)
+    write.writerows(balanced_set_noround)
+# %%

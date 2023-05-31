@@ -5,10 +5,10 @@ import torch
 from torch.utils.data import random_split
 
 from utils.utils_generate_data import *
-from utils.dna_dataset import *
+from utils.dataset_classes import *
 
 
-balanced_set=torch.load("balanced_set.pt")
+balanced_set=torch.load("binary_set_r.pt")
 
 
 """ get kmer count """

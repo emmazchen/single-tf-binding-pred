@@ -1,0 +1,41 @@
+{
+    "model_config":{
+        "model_name": "NeuralNet",
+        "model_kwargs": {
+            "l1_kwargs": {
+                "in_features" : 64,
+                "out_features": 50
+            },
+            "l2_kwargs": {
+                "in_features": 50,
+                "out_features": 30
+            },
+            "l3_kwargs": {
+                "in_features": 30,
+                "out_features": 1
+            }
+        }
+    },
+
+    "loss_config": {
+        "loss_fn": "nn.MSELoss"
+    },
+
+    "optim_config": {
+        "optim_fn": "torch.optim.Adam",
+        "optim_kwargs":{
+            "lr": 0.0001,
+            "betas" : [0.9, 0.999],
+            "weight_decay" : 0.0001
+        }
+    },
+    "trainer_config": {
+        "max_epochs" : 20,
+        "devices" : 1,
+        "precision" : 16,
+        "log_every_n_steps" : 1
+    },
+    "batch_size": 30,
+    "wandb_project": "tf-pfm-nn-prob",
+    "dryrun": false
+}

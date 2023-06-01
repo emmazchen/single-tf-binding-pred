@@ -13,11 +13,11 @@ from utils.utils_generate_data import *
 
     2 probability datasets:
     - dataset with .01 (1%) threshold: prob_set_r       length: 4608
-    - dataset with 0 threshold: prob_set_nr             length: 331776
+    - dataset with 0 threshold: prob_set_nr             length: 20000 (was 331776)
 
     2 binary datasets:
     - dataset with .01 (1%) threshold: binary_set_r     length: 4608
-    - dataset with 0 threshold: binary_set_nr           length: 331776
+    - dataset with 0 threshold: binary_set_nr           length: 20000 (was 331776)
 
     1% threshold means that if frequency of particular nucleotide at particular position is less than 1%, we disregard it and consider freq of that nucleotide to be 0 at that psoition
 
@@ -89,18 +89,22 @@ fullset_nr = [list(tuple) for tuple in zip(sequences, dna_matrices, labels_nr)]
 
 # positive dataset
 positive_set_nr = list(filter(lambda x: x[2]!=0, fullset_nr))
-print(len(positive_set_nr)) # 4*4*1*1*3*3*1*1*4*4 = 2304 binding sequences
+print(len(positive_set_nr)) # 4*4*2*3*3*3*3*4*4*4 = 165888 binding sequences
 
 # randomly sample negative dataset to get balanced set
 negative_set_nr = list(filter(lambda x: x[2]==0, fullset_nr))
-negative_subset_nr = sample(negative_set_nr, len(positive_set_nr))
+
+
+#make nr set smaller
+negative_subset_nr = sample(negative_set_nr, 10000)
+positive_subset_nr = sample(positive_set_nr, 10000)
 
 # generate probability of binding dataset
-prob_set_nr = positive_set_nr + negative_subset_nr
+prob_set_nr = positive_subset_nr + negative_subset_nr
 
 # generate binary 1-bind 0-nobind dataset
-positive_binary_set_nr = [[x,y,1] for [x,y,z] in positive_set_nr]
-binary_set_nr = positive_binary_set_nr + negative_subset_nr
+positive_binary_subset_nr = [[x,y,1] for [x,y,z] in positive_subset_nr]
+binary_set_nr = positive_binary_subset_nr + negative_subset_nr
 
 
 """ Save as pt """

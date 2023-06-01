@@ -4,14 +4,14 @@ import json
 # for linking .py files
 from models.neural_net import *
 from lightning_modules import *
-from preprocessing import kmer_train_set, kmer_val_set, kmer_test_set
+from preprocessing import kmer_train_set, kmer_val_set, kmer_test_set, prediction_type
 # for logging results
 import wandb
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
 
 
-configfile = "configs/nn_config.json" 
+configfile = f"configs/nn_{prediction_type}_config.json" 
 with open(configfile) as stream:
     config = json.load(stream)
 

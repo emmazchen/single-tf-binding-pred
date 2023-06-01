@@ -8,7 +8,10 @@ def binary_accuracy_logits(preds, label):
     # apply threshold of 0.5
     one_preds = preds > .5
     # get accuracy
-    accuracy = (one_preds == label).sum() / len(preds)
+    try:
+        accuracy = (one_preds == label).sum() / len(preds)
+    except:
+        accuracy = (one_preds == label).sum() #if preds is single value
     return accuracy
 
 

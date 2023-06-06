@@ -18,7 +18,7 @@
     },
 
     "loss_config": {
-        "loss_fn": "nn.MSELoss"
+        "loss_fn": "nn.CrossEntropyLoss"
     },
 
     "optim_config": {

@@ -3,15 +3,23 @@ import sys
 import json
 # for linking .py files
 from models.neural_net import *
+from models.classification_transformer import *
 from lightning_modules import *
-from preprocessing import kmer_train_set, kmer_val_set, kmer_test_set, prediction_type
+from torch.utils.data import DataLoader
+
 # for logging results
 import wandb
+from utils.padding_collate_fn import *
 from lightning.pytorch.loggers import WandbLogger
 from lightning.pytorch.callbacks import ModelCheckpoint
 
 
-configfile = f"configs/nn_{prediction_type}_config.json" 
+##################################
+model_type="nn" #nn
+prediction_type="prob" #prob
+##################################
+
+configfile = f"configs/{model_type}_{prediction_type}_config.json" 
 with open(configfile) as stream:
     config = json.load(stream)
 
@@ -20,10 +28,18 @@ loss_config = config['loss_config']
 optim_config = config['optim_config']
 trainer_config = config['trainer_config']
 
+
+data_type= "seq" if model_type=="transformer" else "kmer"
+
+seq_train_set = torch.load(f"data/{data_type}_train_{prediction_type}_r.pt")
+seq_val_set = torch.load(f"data/{data_type}_val_{prediction_type}_r.pt")
+seq_test_set = torch.load(f"data/{data_type}_test_{prediction_type}_r.pt")
+
+
 # load data 
-train_dl = torch.utils.data.DataLoader(kmer_train_set, batch_size=config['batch_size'], shuffle=True)
-val_dl = torch.utils.data.DataLoader(kmer_val_set, batch_size=config['batch_size'], shuffle=True) 
-test_dl = torch.utils.data.DataLoader(kmer_test_set, batch_size=config['batch_size'], shuffle=True) 
+train_dl = DataLoader(seq_train_set, collate_fn=padding_collate, batch_size=config['batch_size'], shuffle=True)
+val_dl = DataLoader(seq_val_set, collate_fn=padding_collate, batch_size=config['batch_size'], shuffle=True) 
+test_dl = DataLoader(seq_test_set, collate_fn=padding_collate, batch_size=config['batch_size'], shuffle=True) 
 
 # instance model
 model = eval(model_config['model_name'])(model_config['model_kwargs'])
